@@ -40,7 +40,7 @@ function loadTowns() {
     return new Promise ((resolve, reject) => {
         const xhr = new XMLHttpRequest();
 
-        xhr.open('GET', ' https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
+        xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
         xhr.responsType = 'json';
         xhr.send();
         xhr.addEventListener('load', () => {
@@ -63,8 +63,12 @@ function loadTowns() {
                 });
                 
                 resolve(townsArray);
+               
             }
         });
+
+        xhr.addEventListener('error', reject);
+        xhr.addEventListener('abort', reject);
         
     });
 }
@@ -81,7 +85,8 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
-    if (full.prototype.toLowerCase().indexOf(chunk.prototype.toLowerCase()) !== -1) {
+  
+    if (full.toLowerCase().indexOf(chunk.toLowerCase()) !== -1) {
         return true;
     } else {
         return false;
@@ -91,11 +96,22 @@ function isMatching(full, chunk) {
 
 loadTowns().then((res) => {
     towns = res;
+}).catch(() => {
+    filterResult.innerText = 'Не удалось загрузить города';
     loadingBlock.style.display = 'none';
     filterBlock.style.display = 'block';
+    filterInput.style.display = 'none';
 
+    let buttonLoad = document.createElement('button');
+
+    buttonLoad.innerText = 'Загрузить еще раз';
+    homeworkContainer.appendChild(buttonLoad);
+
+    buttonLoad.addEventListener('click', () => {
+        location.reload()
+
+    });
 });
-
 
 /* Блок с надписью "Загрузка" */
 const loadingBlock = homeworkContainer.querySelector('#loading-block');
@@ -108,19 +124,20 @@ const filterResult = homeworkContainer.querySelector('#filter-result');
 
 let towns = [];
 
+
+
 filterInput.addEventListener('keyup', function(e) {
     // это обработчик нажатия кливиш в текстовом поле
     if (filterInput.value) {
         filterResult.innerHTML = towns.filter((item) => {
-            //console.log(item.name, filterInput.value);
-
+            
             return isMatching(item.name, filterInput.value);
         }).map((item) => { 
-            console.log(item.name);
-            return `${item.name}`;
+    
+            return `${item.name}</br>`;
         }).join('');
     } else {
-        return ''; 
+        filterResult.innerHTML = ''; 
     }
 });
 
