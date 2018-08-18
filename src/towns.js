@@ -110,12 +110,13 @@ let towns = [];
 
 filterInput.addEventListener('keyup', function(e) {
     // это обработчик нажатия кливиш в текстовом поле
-    if (filterResult.innerHTML = filterInput.value) {
-        towns.filter((item) => {
+    if (filterInput.value) {
+        filterResult.innerHTML = towns.filter((item) => {
             //console.log(item.name, filterInput.value);
-            
+
             return isMatching(item.name, filterInput.value);
         }).map((item) => { 
+            console.log(item.name);
             return `${item.name}`;
         }).join('');
     } else {
