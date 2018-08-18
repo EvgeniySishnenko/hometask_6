@@ -37,6 +37,36 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
+    return new Promise ((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('GET', ' https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
+        xhr.responsType = 'json';
+        xhr.send();
+        xhr.addEventListener('load', () => {
+            if (xhr.status >= 400) {
+                reject();
+            } else {
+                const townsArray = JSON.parse(xhr.responseText);
+
+                loadingBlock.style.display = 'none';
+                filterBlock.style.display = 'block';
+                townsArray.sort((a, b) => {
+                    if (a.name < b.name) {
+                        return -1;
+                    }
+                    if (a.name > b.name) {
+                        return 1;
+                    }
+                    
+                    return 0;
+                });
+                
+                resolve(townsArray);
+            }
+        });
+        
+    });
 }
 
 /*
@@ -51,7 +81,21 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
+    if (full.prototype.toLowerCase().indexOf(chunk.prototype.toLowerCase()) !== -1) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
+
+loadTowns().then((res) => {
+    towns = res;
+    loadingBlock.style.display = 'none';
+    filterBlock.style.display = 'block';
+
+});
+
 
 /* Блок с надписью "Загрузка" */
 const loadingBlock = homeworkContainer.querySelector('#loading-block');
@@ -62,8 +106,21 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
-filterInput.addEventListener('keyup', function() {
+let towns = [];
+
+filterInput.addEventListener('keyup', function(e) {
     // это обработчик нажатия кливиш в текстовом поле
+    if (filterResult.innerHTML = filterInput.value) {
+        towns.filter((item) => {
+            //console.log(item.name, filterInput.value);
+            
+            return isMatching(item.name, filterInput.value);
+        }).map((item) => { 
+            return `${item.name}`;
+        }).join('');
+    } else {
+        return ''; 
+    }
 });
 
 export {
